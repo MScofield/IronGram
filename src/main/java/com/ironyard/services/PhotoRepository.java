@@ -2,6 +2,8 @@ package com.ironyard.services;
 
 import com.ironyard.entities.Photo;
 import com.ironyard.entities.User;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
@@ -11,4 +13,5 @@ import java.util.List;
  */
 public interface PhotoRepository extends CrudRepository<Photo, Integer> {
     List<Photo> findByRecipient(User receiver);
+    List<Photo> findByRecipientAndPublicORnot(User receiver, Boolean publicORnot);
 }

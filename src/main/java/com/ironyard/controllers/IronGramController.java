@@ -20,7 +20,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Timer;
 
 /**
  * Created by scofieldservices on 1/3/17.
@@ -73,7 +78,7 @@ public class IronGramController {
     }
 
     @RequestMapping("/upload")
-    public Photo upload(HttpSession session, HttpServletResponse response, String receiver, MultipartFile photo) throws Exception {
+    public Photo upload(HttpSession session, HttpServletResponse response, String receiver, MultipartFile photo, Boolean publicORnot, Long lifeTime) throws Exception {
         String username = (String) session.getAttribute("username");
         if (username == null) {
             throw new Exception("Not logged in.");
@@ -93,6 +98,8 @@ public class IronGramController {
         p.setSender(senderUser);
         p.setRecipient(receiveUser);
         p.setFilename(photoFile.getName());
+        p.setPublicORnot(publicORnot);
+        p.setLifeTime(lifeTime);
         photos.save(p);
 
         response.sendRedirect("/");
@@ -100,13 +107,48 @@ public class IronGramController {
         return p;
     }
 
-        @RequestMapping("/photos")
+        @RequestMapping(path = "/photos", method = RequestMethod.GET)
         public List<Photo> showPhotos(HttpSession session) throws Exception {
             String username = (String) session.getAttribute("username");
+
             if (username == null) {
                 throw new Exception("not logged in");
             }
             User user = users.findFirstByName(username);
-            return photos.findByRecipient(user);
+            List<Photo> allPhotos = (List<Photo>) photos.findAll();
+
+//            List<Photo> recipientPhotos = photos.findByRecipient(user);
+            for (Photo photo: allPhotos) {
+                if (photo.getLifeTime() == null) {
+                    photo.setLifeTime((long) 10);
+                }
+            }
+//            for (Photo photo: allPhotos) {
+//                if (photo.getRecipient().getId() == user.getId()){
+//                    recipientPhotos.add(photo);
+//                }
+//            }
+
+            for (Photo photo: allPhotos) {
+                if (photo.getPostedTime() == null) {
+                    photo.setPostedTime(LocalDateTime.now());
+                    photos.save(photo);
+                }
+
+                if (LocalDateTime.now().isAfter(photo.getPostedTime().plusSeconds(photo.getLifeTime()))) {
+                    File deletePhoto = new File("public/"+photo.getFilename());
+                    deletePhoto.delete();
+                    photos.delete(photo);
+                }
+
+            }
+
+            return photos.findByRecipientAndPublicORnot(user, true);
         }
+
+        public void photoManagement(){
+
+        }
+
+
 }
