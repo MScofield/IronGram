@@ -89,7 +89,10 @@ public class IronGramController {
         if(receiveUser == null) {
             throw new Exception("Receiver does not exist");
         }
-
+        //needs trycatch or if, some way to stop uploading non-image files
+        if(!photo.getContentType().startsWith("image")){
+            throw new Exception("Please upload image files only");
+        }
         File photoFile = File.createTempFile("photo", photo.getOriginalFilename(), new File("public"));
         FileOutputStream fos = new FileOutputStream(photoFile);
         fos.write(photo.getBytes());
@@ -151,7 +154,8 @@ public class IronGramController {
             return photos.findByRecipient(user);
         }
 
-        public void photoManagement(){
+        public void jsonstream(){
+        //get route /mysentimages with new serializer returning  serializer.serialize(selectedImages)
 
         }
 
