@@ -53,10 +53,12 @@ public class IronGramController {
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public User login(String username, String password, HttpSession session, HttpServletResponse response) throws Exception {
         User user = users.findFirstByName(username);
+
         if (user == null) {
             user = new User(username, PasswordStorage.createHash(password));
             users.save(user);
         }
+
         else if (!PasswordStorage.verifyPassword(password, user.getPassword())) {
             throw new Exception("Wrong password");
         }
@@ -80,6 +82,7 @@ public class IronGramController {
     @RequestMapping("/upload")
     public Photo upload(HttpSession session, HttpServletResponse response, String receiver, MultipartFile photo, Boolean isPublic, Long lifeTime) throws Exception {
         String username = (String) session.getAttribute("username");
+
         if (username == null) {
             throw new Exception("Not logged in.");
         }
@@ -89,7 +92,7 @@ public class IronGramController {
         if(receiveUser == null) {
             throw new Exception("Receiver does not exist");
         }
-        //needs trycatch or if, some way to stop uploading non-image files
+
         if(!photo.getContentType().startsWith("image")){
             throw new Exception("Please upload image files only");
         }
@@ -125,17 +128,11 @@ public class IronGramController {
             User user = users.findFirstByName(username);
             List<Photo> allPhotos = (List<Photo>) photos.findAll();
 
-//            List<Photo> recipientPhotos = photos.findByRecipient(user);
             for (Photo photo: allPhotos) {
                 if (photo.getLifeTime() == null) {
                     photo.setLifeTime((long) 10);
                 }
             }
-//            for (Photo photo: allPhotos) {
-//                if (photo.getRecipient().getId() == user.getId()){
-//                    recipientPhotos.add(photo);
-//                }
-//            }
 
             for (Photo photo: allPhotos) {
                 if (photo.getPostedTime() == null) {
@@ -154,9 +151,11 @@ public class IronGramController {
             return photos.findByRecipient(user);
         }
 
-        public void jsonstream(){
-        //get route /mysentimages with new serializer returning  serializer.serialize(selectedImages)
-
+        @RequestMapping(path = "/public-json-stream", method = RequestMethod.GET)
+        public Iterable<Photo> jsonStream(HttpSession session){
+            String userName = (String) session.getAttribute("userName");
+            User sender = users.findFirstByName(userName);
+            return photos.findByIsPublic(sender);
         }
 
 
