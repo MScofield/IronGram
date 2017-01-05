@@ -27,7 +27,7 @@ public class Photo {
     LocalDateTime postedTime;
 
     @Column(nullable = false)
-    Boolean publicORnot;
+    Boolean isPublic;
 
     @Column(nullable = false)
     Long lifeTime;
@@ -40,7 +40,7 @@ public class Photo {
         this.recipient = recipient;
         this.filename = filename;
         this.postedTime = postedTime;
-        this.publicORnot = publicORnot;
+        this.isPublic = isPublic;
         this.lifeTime = lifeTime;
     }
 
@@ -84,12 +84,12 @@ public class Photo {
         this.postedTime = postedTime;
     }
 
-    public Boolean getPublicORnot() {
-        return publicORnot;
+    public Boolean getPublic() {
+        return isPublic;
     }
 
-    public void setPublicORnot(Boolean publicORnot) {
-        this.publicORnot = publicORnot;
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
     }
 
     public Long getLifeTime() {

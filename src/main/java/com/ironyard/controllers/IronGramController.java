@@ -78,7 +78,7 @@ public class IronGramController {
     }
 
     @RequestMapping("/upload")
-    public Photo upload(HttpSession session, HttpServletResponse response, String receiver, MultipartFile photo, Boolean publicORnot, Long lifeTime) throws Exception {
+    public Photo upload(HttpSession session, HttpServletResponse response, String receiver, MultipartFile photo, Boolean isPublic, Long lifeTime) throws Exception {
         String username = (String) session.getAttribute("username");
         if (username == null) {
             throw new Exception("Not logged in.");
@@ -98,12 +98,12 @@ public class IronGramController {
         p.setSender(senderUser);
         p.setRecipient(receiveUser);
         p.setFilename(photoFile.getName());
-        p.setPublicORnot(publicORnot);
+        p.setPublic(isPublic);
         p.setLifeTime(lifeTime);
         System.out.println(p.getSender());
         System.out.println(p.getRecipient());
         System.out.println(p.getFilename());
-        System.out.println(p.getPublicORnot());
+        System.out.println(p.getPublic());
         System.out.println(p.getLifeTime());
         photos.save(p);
 
@@ -148,7 +148,7 @@ public class IronGramController {
 
             }
 
-            return photos.findByRecipientAndPublicORnot(user, true);
+            return photos.findByRecipient(user);
         }
 
         public void photoManagement(){
