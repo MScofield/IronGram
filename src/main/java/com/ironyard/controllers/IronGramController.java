@@ -100,6 +100,11 @@ public class IronGramController {
         p.setFilename(photoFile.getName());
         p.setPublicORnot(publicORnot);
         p.setLifeTime(lifeTime);
+        System.out.println(p.getSender());
+        System.out.println(p.getRecipient());
+        System.out.println(p.getFilename());
+        System.out.println(p.getPublicORnot());
+        System.out.println(p.getLifeTime());
         photos.save(p);
 
         response.sendRedirect("/");
