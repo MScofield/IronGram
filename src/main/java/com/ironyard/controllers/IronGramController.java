@@ -1,5 +1,6 @@
 package com.ironyard.controllers;
 
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.ironyard.entities.Photo;
 import com.ironyard.entities.User;
 import com.ironyard.services.PhotoRepository;
@@ -127,7 +128,6 @@ public class IronGramController {
             }
             User user = users.findFirstByName(username);
             List<Photo> allPhotos = (List<Photo>) photos.findAll();
-
             for (Photo photo: allPhotos) {
                 if (photo.getLifeTime() == null) {
                     photo.setLifeTime((long) 10);
@@ -151,12 +151,14 @@ public class IronGramController {
             return photos.findByRecipient(user);
         }
 
-        @RequestMapping(path = "/public-json-stream", method = RequestMethod.GET)
-        public Iterable<Photo> jsonStream(HttpSession session){
-            String userName = (String) session.getAttribute("userName");
-            User sender = users.findFirstByName(userName);
-            return photos.findByIsPublic(sender);
-        }
+    @RequestMapping(path = "/public-photos", method = RequestMethod.GET)
+    public Iterable<Photo> jsonStream(HttpSession session){
+        String userName = (String) session.getAttribute("username");
+        System.out.println(userName);
+        User sender = users.findFirstByName(userName);
+        System.out.println(sender);
+        return photos.findBySenderAndIsPublic(sender, true);
+    }
 
 
 }

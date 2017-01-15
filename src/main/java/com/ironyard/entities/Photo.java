@@ -23,7 +23,7 @@ public class Photo {
     @Column(nullable = false)
     String filename;
 
-    @Column(nullable = false)
+    @Column
     LocalDateTime postedTime;
 
     @Column(nullable = false)
